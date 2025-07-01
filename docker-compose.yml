@@ -1,0 +1,30 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=news
+      - POSTGRES_USER=news
+      - POSTGRES_PASSWORD=news
+    volumes:
+      - ./infra/postgres_init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "news"]
+      interval: 5s
+      retries: 5
+  crawler:
+    build: .
+    command: python crawler/crawler.py
+    depends_on:
+      db:
+        condition: service_healthy
+  summarizer:
+    build: .
+    command: python summarizer/summarizer.py
+    depends_on:
+      - crawler
+  push:
+    build: .
+    command: python push_service/push.py
+    depends_on:
+      - summarizer
