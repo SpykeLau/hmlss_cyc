@@ -25,7 +25,7 @@ jobs:
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
-        password: ${{ secrets.ㄘㄩhmlss_cyc_pat }}
+        password: ${{ secrets.hmlss_cyc_pat }}
 
     - name: Build and Push
       uses: docker/build-push-action@v5
